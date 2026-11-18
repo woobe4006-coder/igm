@@ -1,0 +1,551 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>나의 AI 활용 수준</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: single narrow column — twelve Likert questions, then a result panel: stage card, two advice cards, and four area bars that show which block fell short. */
+:root{
+  --paper:#F4F6FA;
+  --card:#FFFFFF;
+  --ink:#16223A;
+  --muted:#5B6577;
+  --line:#E1E4EC;
+  --tint:#ECEFF6;
+  --blue:#1B3A7A;
+  --blue-soft:#DCE4F3;
+  --orange:#F26B43;
+  --font-ui:"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Malgun Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1420;
+    --card:#161E2E;
+    --ink:#E8ECF4;
+    --muted:#9AA5B8;
+    --line:#293345;
+    --tint:#1D2638;
+    --blue:#7FA3E8;
+    --blue-soft:#24324B;
+    --orange:#FF8A62;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1420;
+  --card:#161E2E;
+  --ink:#E8ECF4;
+  --muted:#9AA5B8;
+  --line:#293345;
+  --tint:#1D2638;
+  --blue:#7FA3E8;
+  --blue-soft:#24324B;
+  --orange:#FF8A62;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-ui);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{
+  max-width:46rem;
+  margin:0 auto;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:2.5rem 4rem;
+}
+
+/* header */
+.eyebrow{
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.14em;
+  color:var(--blue);
+  margin:0 0 .7rem;
+}
+h1{
+  font-size:clamp(1.55rem,5vw,2.1rem);
+  font-weight:900;
+  letter-spacing:-.02em;
+  line-height:1.25;
+  margin:0 0 .75rem;
+  text-wrap:balance;
+}
+.lede{
+  color:var(--muted);
+  font-size:.95rem;
+  margin:0;
+  max-width:34rem;
+}
+.pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem}
+.pill{
+  font-size:.76rem;
+  font-weight:700;
+  color:var(--muted);
+  border:1px solid var(--line);
+  background:var(--card);
+  border-radius:20px;
+  padding:.25rem .7rem;
+}
+.rule{
+  height:3px;
+  background:var(--orange);
+  width:2.75rem;
+  border-radius:2px;
+  margin:1.6rem 0 2rem;
+}
+
+/* quiz */
+.panel{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:1.4rem 1.3rem;
+}
+.panel-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:.8rem;
+  flex-wrap:wrap;
+}
+.panel-head h2{
+  font-size:1.05rem;
+  font-weight:900;
+  letter-spacing:-.01em;
+  margin:0;
+}
+.counter{
+  font-size:.9rem;
+  font-weight:900;
+  color:var(--blue);
+  font-variant-numeric:tabular-nums;
+}
+.legend{
+  font-size:.8rem;
+  color:var(--muted);
+  margin:.5rem 0 0;
+}
+.track{
+  height:6px;
+  background:var(--tint);
+  border-radius:6px;
+  overflow:hidden;
+  margin:.9rem 0 .2rem;
+}
+.fill{
+  height:100%;
+  background:var(--blue);
+  width:0;
+  border-radius:6px;
+  transition:width .2s ease;
+}
+
+.q{
+  padding:1.25rem 0;
+  border-bottom:1px solid var(--line);
+}
+.q:last-of-type{border-bottom:0;padding-bottom:.4rem}
+.q-text{
+  display:flex;
+  gap:.6rem;
+  align-items:flex-start;
+  margin-bottom:.85rem;
+  min-width:0;
+}
+.q-no{
+  flex:none;
+  font-size:.82rem;
+  font-weight:900;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+  padding-top:.2rem;
+  width:1.35rem;
+}
+.q-body{min-width:0;font-size:.97rem;line-height:1.55;font-weight:500}
+.scalerow{display:flex;flex-direction:column;gap:.35rem}
+.opts{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:.35rem;
+}
+.opt{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--card);
+  color:var(--muted);
+  text-align:center;
+  padding:.55rem .2rem;
+  cursor:pointer;
+  font-size:1rem;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+  transition:background .12s ease,border-color .12s ease,color .12s ease;
+  min-width:0;
+}
+.opt:hover{background:var(--tint)}
+.opt input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.opt:has(input:checked){
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+.opt:focus-within{outline:2px solid var(--orange);outline-offset:2px}
+.anchors{
+  display:flex;
+  justify-content:space-between;
+  font-size:.72rem;
+  color:var(--muted);
+}
+
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.4rem}
+button{
+  font-family:inherit;
+  font-size:.9rem;
+  font-weight:700;
+  border-radius:8px;
+  padding:.7rem 1.2rem;
+  cursor:pointer;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--muted);
+  transition:background .12s ease,color .12s ease;
+}
+button:hover{background:var(--tint);color:var(--ink)}
+button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+button.primary:hover{opacity:.9;background:var(--blue);color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:disabled:hover{background:var(--card);color:var(--muted)}
+button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+/* result */
+.result{margin-top:1.5rem}
+.result-title{
+  font-size:1.05rem;
+  font-weight:900;
+  letter-spacing:-.01em;
+  margin:0 0 .9rem;
+}
+.hero{
+  background:var(--blue);
+  border-radius:12px;
+  padding:1.7rem 1.4rem;
+  color:#fff;
+}
+.hero-eyebrow{
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.14em;
+  opacity:.75;
+  margin:0 0 .7rem;
+}
+.hero-stage{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  font-size:.74rem;
+  font-weight:900;
+  padding:.2rem .55rem;
+  border-radius:5px;
+  margin-bottom:.6rem;
+}
+.hero-name{
+  font-size:clamp(1.6rem,6vw,2.2rem);
+  font-weight:900;
+  letter-spacing:-.03em;
+  line-height:1.2;
+  margin:0 0 .2rem;
+}
+.hero-en{
+  font-size:.92rem;
+  font-weight:700;
+  opacity:.8;
+  margin:0 0 1rem;
+}
+.hero-def{
+  margin:0;
+  font-size:1rem;
+  line-height:1.65;
+  opacity:.95;
+  max-width:32rem;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
+  gap:.7rem;
+  margin-top:.7rem;
+}
+.infocard{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:1.2rem 1.2rem;
+  min-width:0;
+}
+.infocard.next{background:var(--tint);border-color:var(--tint)}
+.infocard h3{
+  font-size:.74rem;
+  font-weight:900;
+  letter-spacing:.12em;
+  color:var(--muted);
+  margin:0 0 .55rem;
+}
+.infocard p{margin:0;font-size:.95rem;line-height:1.7}
+
+.bars{
+  margin-top:.7rem;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:1.3rem 1.2rem;
+}
+.bars h3{
+  font-size:1rem;
+  font-weight:900;
+  letter-spacing:-.01em;
+  margin:0 0 .25rem;
+}
+.bars .sub{font-size:.84rem;color:var(--muted);margin:0 0 1.1rem}
+.barrow{margin-bottom:1rem}
+.barrow:last-child{margin-bottom:0}
+.barlabel{
+  display:flex;
+  justify-content:space-between;
+  gap:.7rem;
+  font-size:.9rem;
+  margin-bottom:.4rem;
+  min-width:0;
+}
+.barlabel b{font-variant-numeric:tabular-nums;font-weight:900}
+.barlabel .met{color:var(--blue)}
+.barlabel .gap{color:var(--orange)}
+.bartrack{background:var(--tint);height:10px;border-radius:10px;overflow:hidden}
+.bartrack span{display:block;height:100%;border-radius:10px;background:var(--blue)}
+.bartrack span.gap{background:var(--orange)}
+
+.note{
+  margin-top:.7rem;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:1.1rem 1.2rem;
+  font-size:.88rem;
+  line-height:1.7;
+  color:var(--muted);
+}
+.note b{display:block;color:var(--ink);font-weight:900;margin-bottom:.3rem;font-size:.92rem}
+.disclaimer{font-size:.78rem;color:var(--muted);line-height:1.6;margin:.9rem .2rem 0}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">AI 시대의 리더십</p>
+  <h1>나의 AI 활용 수준</h1>
+  <p class="lede">AI를 이해하고 활용하는 단계부터 조직의 변화를 주도하는 단계까지. 최근 3~6개월간의 실제 경험을 떠올리며 답해 보십시오.</p>
+  <div class="pills">
+    <span class="pill">12개 문항</span>
+    <span class="pill">5점 척도</span>
+    <span class="pill">약 3분</span>
+  </div>
+  <div class="rule"></div>
+
+  <section class="panel" id="quiz">
+    <div class="panel-head">
+      <h2>셀프 체크</h2>
+      <span class="counter" id="counter">0 / 12</span>
+    </div>
+    <p class="legend">1 전혀 아니다 · 2 아니다 · 3 보통이다 · 4 그렇다 · 5 매우 그렇다</p>
+    <div class="track"><div class="fill" id="progress"></div></div>
+    <div id="questions"></div>
+    <div class="actions">
+      <button type="button" class="primary" id="submit" disabled>진단 결과 확인하기</button>
+      <button type="button" id="reset">응답 초기화</button>
+    </div>
+  </section>
+
+  <section class="result" id="result" hidden aria-live="polite">
+    <h2 class="result-title">나의 AI 활용 수준 진단 결과</h2>
+
+    <div class="hero">
+      <span class="hero-stage" id="rstage">LEVEL 1</span>
+      <h3 class="hero-name" id="rname">AI-Aware Leader</h3>
+      <p class="hero-en" id="ren">AI 이해 및 사용 단계</p>
+      <p class="hero-def" id="rdef"></p>
+    </div>
+
+    <div class="cards">
+      <div class="infocard next">
+        <h3>성장 과제</h3>
+        <p id="rnext"></p>
+      </div>
+    </div>
+
+    <div class="bars">
+      <h3>영역별 진단 결과</h3>
+      <p class="sub">평균 3.5점이 각 영역의 충족 기준입니다. 주황색은 아직 기준에 못 미친 영역입니다.</p>
+      <div id="barlist"></div>
+    </div>
+
+    <div class="note">
+      <b>진단 방식</b>
+      각 영역 3개 문항의 평균이 3.5점 이상이면 그 영역을 충족한 것으로 봅니다. 상위 영역 점수가 높아도 앞 영역을 채우지 못했다면 그 단계에 도달한 것으로 보지 않으며, 1단계부터 순서대로 기준을 충족한 가장 높은 단계를 결과로 제시합니다.
+    </div>
+    <p class="disclaimer">본 진단은 교육용 자기성찰 도구이며 통계적으로 검증된 표준화 검사가 아닙니다. 직무와 권한에 따라 응답에 차이가 있을 수 있습니다.</p>
+
+    <div class="actions">
+      <button type="button" id="again">다시 진단하기</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var GROUPS = [
+    {
+      area:"AI 이해 및 사용",
+      stage:"LEVEL 1", ko:"AI-Aware Leader", en:"AI 이해 및 사용 단계",
+      def:"AI의 기본적인 기능과 특성을 이해하고, 직접 사용해 본 경험이 있는 단계입니다. AI가 제공하는 정보의 가능성과 한계를 인식하고 있지만, 아직 실제 업무에서의 활용은 제한적인 수준입니다.",
+      next:"단순한 사용 경험을 넘어 보고서 작성, 자료 분석, 아이디어 도출 등 실제 업무에 AI를 적용하며 개인의 생산성과 업무 품질을 높이는 것이 중요합니다.",
+      qs:[
+        "나는 생성형 AI가 어떤 기능을 제공하는지 알고 있다.",
+        "나는 생성형 AI를 직접 사용해 다양한 질문이나 과제를 수행해 본 경험이 있다.",
+        "나는 AI가 실제 사실과 다른 내용을 그럴듯하게 답변할 수 있다는 것을 알고 있다."
+      ]
+    },
+    {
+      area:"개인 생산성 향상",
+      stage:"LEVEL 2", ko:"AI-Enabled Leader", en:"개인 생산성 향상 단계",
+      def:"AI를 자신의 업무에 적극적으로 활용하며, 업무 효율성과 결과물의 품질을 높이는 단계입니다. AI를 단순한 정보 검색 도구가 아닌 업무 파트너로 활용하고 있지만, 그 효과는 주로 개인의 업무 수준에 머물러 있습니다.",
+      next:"개인의 생산성 향상을 넘어 조직 차원에서 AI를 적용할 핵심 과제를 발굴하고, AI 활용을 조직의 의사결정과 실질적인 성과로 연결하는 것이 중요합니다.",
+      qs:[
+        "나는 보고서 작성, 자료 분석, 아이디어 도출 등 내 업무에 AI를 정기적으로 활용한다.",
+        "나는 AI를 활용해 기존보다 업무 시간을 단축하거나 결과물의 품질을 높인 경험이 있다.",
+        "나는 원하는 결과를 얻기 위해 질문을 구체화하거나 AI의 답변을 반복적으로 개선할 수 있다."
+      ]
+    },
+    {
+      area:"조직 성과 창출",
+      stage:"LEVEL 3", ko:"AI-Driven Leader", en:"조직 성과 창출 단계",
+      def:"AI를 조직의 핵심 과제와 의사결정에 활용하고, 생산성·비용·품질 등 실질적인 성과로 연결하는 단계입니다. 개인의 AI 활용을 넘어 조직 차원의 변화를 주도하지만, 주로 기존 업무와 운영 방식의 개선에 초점을 맞추고 있습니다.",
+      next:"기존 업무에 AI를 적용해 효율성을 높이는 수준을 넘어, AI를 전제로 업무 프로세스와 사람의 역할을 새롭게 정의하고 조직의 일하는 방식을 재설계하는 것이 중요합니다.",
+      qs:[
+        "나는 우리 조직에서 AI를 우선 적용할 만한 핵심 업무나 문제를 구체적으로 파악하고 있다.",
+        "나는 조직의 주요 의사결정이나 문제 해결 과정에서 AI를 활용하도록 주도한 경험이 있다.",
+        "나는 AI 활용 성과를 생산성, 비용, 품질 등 구체적인 지표로 확인하거나 관리하고 있다."
+      ]
+    },
+    {
+      area:"조직 재설계",
+      stage:"LEVEL 4", ko:"AI Change Leader", en:"조직 재설계 단계",
+      def:"AI를 단순한 업무 지원 도구가 아닌 조직 운영의 핵심 요소로 인식하고, 업무 프로세스(워크플로우)와 사람의 역할(워크포스)을 새롭게 설계하는 단계입니다. AI를 전제로 조직의 일하는 방식과 운영 체계를 변화시키며, 조직 차원의 혁신을 주도합니다.",
+      next:"새롭게 설계한 업무 방식이 조직에 안정적으로 정착하도록 구성원의 역량 개발, 변화관리, 성과관리 체계를 고도화하고 지속적인 혁신으로 연결하는 것이 중요합니다.",
+      qs:[
+        "나는 기존 업무에 AI를 추가하는 수준을 넘어 업무 프로세스 자체를 재설계하는 과제를 추진하고 있다.",
+        "나는 AI와 사람이 각각 맡아야 할 역할, 권한, 책임을 새롭게 정의하고 있다.",
+        "나는 AI 기반의 새로운 업무 방식이 정착되도록 조직 구조, 인력 역량, 운영 체계의 변화를 추진하고 있다."
+      ]
+    }
+  ];
+
+  var THRESHOLD = 3.5;
+  var qroot = document.getElementById('questions');
+  var counter = document.getElementById('counter');
+  var progress = document.getElementById('progress');
+  var submit = document.getElementById('submit');
+  var result = document.getElementById('result');
+
+  var html = '';
+  GROUPS.forEach(function(g, gi){
+    g.qs.forEach(function(q, j){
+      var n = gi * 3 + j;
+      var opts = '';
+      for(var v = 1; v <= 5; v++){
+        opts += '<label class="opt">' + v +
+                '<input type="radio" name="q' + n + '" value="' + v + '"></label>';
+      }
+      html += '<div class="q">' +
+                '<div class="q-text"><span class="q-no">' + (n + 1) + '</span>' +
+                '<span class="q-body">' + q + '</span></div>' +
+                '<div class="scalerow"><div class="opts">' + opts + '</div>' +
+                '<div class="anchors"><span>전혀 아니다</span><span>매우 그렇다</span></div></div>' +
+              '</div>';
+    });
+  });
+  qroot.innerHTML = html;
+
+  function answers(){
+    var out = [];
+    for(var i = 0; i < 12; i++){
+      var el = document.querySelector('input[name=q' + i + ']:checked');
+      out.push(el ? Number(el.value) : null);
+    }
+    return out;
+  }
+
+  function update(){
+    var done = answers().filter(function(v){ return v !== null; }).length;
+    counter.textContent = done + ' / 12';
+    progress.style.width = (done / 12 * 100) + '%';
+    submit.disabled = done !== 12;
+  }
+  qroot.addEventListener('change', update);
+
+  submit.addEventListener('click', function(){
+    var a = answers();
+    if(a.some(function(v){ return v === null; })) return;
+
+    var means = GROUPS.map(function(_, i){
+      return (a[i*3] + a[i*3+1] + a[i*3+2]) / 3;
+    });
+
+    var level = 0;
+    for(var i = 0; i < 4; i++){
+      if(means[i] >= THRESHOLD) level = i + 1;
+      else break;
+    }
+    var idx = Math.max(0, level - 1);
+    var g = GROUPS[idx];
+
+    document.getElementById('rstage').textContent = g.stage;
+    document.getElementById('rname').textContent = g.ko;
+    document.getElementById('ren').textContent = g.en;
+    document.getElementById('rdef').textContent = g.def;
+    document.getElementById('rnext').textContent = g.next;
+
+    document.getElementById('barlist').innerHTML = means.map(function(m, i){
+      var met = m >= THRESHOLD;
+      return '<div class="barrow">' +
+               '<div class="barlabel"><span>' + GROUPS[i].area + '</span>' +
+               '<b class="' + (met ? 'met' : 'gap') + '">' + m.toFixed(1) + ' / 5.0</b></div>' +
+               '<div class="bartrack"><span class="' + (met ? '' : 'gap') +
+               '" style="width:' + (m * 20) + '%"></span></div>' +
+             '</div>';
+    }).join('');
+
+    result.hidden = false;
+    result.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  function reset(){
+    Array.prototype.forEach.call(document.querySelectorAll('input[type=radio]'), function(el){
+      el.checked = false;
+    });
+    result.hidden = true;
+    update();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('again').addEventListener('click', reset);
+
+  update();
+})();
+</script>
+
+</body></html>
